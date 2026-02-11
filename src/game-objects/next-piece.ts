@@ -37,7 +37,6 @@ export class NextPiece {
   private fontSize = 12;
   private text = "NEXT";
   private scale = 0.25;
-  private pieceBlockWidth = 40;
   private pieceBlockHeight = 40;
   private blockSize = BLOCK_SIZE * this.scale;
 

@@ -1,10 +1,22 @@
 import Phaser from "phaser";
+import { registerSW } from "virtual:pwa-register";
+
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm("Доступно обновление игры. Обновить?")) {
+      updateSW(true);
+    }
+  },
+  onOfflineReady() {
+    console.log("Игра готова к работе без интернета!");
+  },
+});
 
 import { MainScene } from "./scenes/main-scene";
 
 const GAME_CONTAINER_ID = "game-container";
 
-const game = new Phaser.Game({
+new Phaser.Game({
   type: Phaser.AUTO,
   parent: GAME_CONTAINER_ID,
   backgroundColor: "#1a1a1a",
