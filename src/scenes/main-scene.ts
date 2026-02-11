@@ -1,14 +1,16 @@
 import Phaser from "phaser";
 
+import { Gravity } from "../game-objects/gravity";
 import { Piece } from "../game-objects/piece";
 import { UI } from "../game-objects/ui";
-import { CollisionDetection } from "../utils/collision-detection";
 import { GameState } from "../utils/game-state";
+import { InputHandler } from "../utils/input-handler";
 import { TypesQueue } from "../utils/types-queue";
-import { BLOCK_SIZE, SceneKey, SHAPES } from "../constants";
-import { ControlsEvent, TetrominoType, type Position } from "../types";
+import { BLOCK_SIZE, SceneKey } from "../constants";
+import { CollisionEvent, ControlsEvent } from "../events";
+import { TetrominoType, type Position } from "../types";
 
-const STARTING_POSITIONS: Record<TetrominoType, Position> = {
+export const STARTING_POSITIONS: Record<TetrominoType, Position> = {
   S: { x: 3, y: 0 },
   Z: { x: 3, y: 0 },
   J: { x: 3, y: 0 },
@@ -18,17 +20,15 @@ const STARTING_POSITIONS: Record<TetrominoType, Position> = {
   T: { x: 3, y: 0 },
 };
 
-const BASE_POINTS = [0, 40, 100, 300, 1200];
 const GAME_OVER_DELAY = 1000;
 
 export class MainScene extends Phaser.Scene {
-  private activePiece!: Piece;
-
-  // NEW
+  public activePiece!: Piece;
   public ui!: UI;
   public typesQueue: TypesQueue;
   public gameState: GameState;
-  public collisionDetection: CollisionDetection;
+  public gravity!: Gravity;
+  public inputHandler!: InputHandler;
 
   // Movement intervals and delays
   private softDropInterval: number = 50;
@@ -36,13 +36,11 @@ export class MainScene extends Phaser.Scene {
   private fastShiftInterval = 50;
 
   // Timers
-  moveTimer: Phaser.Time.TimerEvent | null = null;
-  gravityTimer!: Phaser.Time.TimerEvent;
+  private moveTimer: Phaser.Time.TimerEvent | null = null;
 
   constructor() {
     super({ key: SceneKey.Main, active: true });
 
-    this.collisionDetection = new CollisionDetection();
     this.typesQueue = new TypesQueue();
     this.gameState = new GameState();
   }
@@ -76,13 +74,17 @@ export class MainScene extends Phaser.Scene {
     this.ui.create();
     this.typesQueue.create();
 
-    this.handleControlsEvents();
-
+    this.inputHandler = new InputHandler({ scene: this });
+    this.gravity = new Gravity({ scene: this, callback: this.movePieceDown });
     this.spawnPiece();
-    this.handleGravity();
+
+    this.handleControlsEvents();
+    this.handleCollisionEvents();
   }
 
   private spawnPiece() {
+    if (this.activePiece) this.activePiece.destroy();
+
     const type = this.typesQueue.getNext();
 
     this.activePiece = new Piece({
@@ -92,120 +94,48 @@ export class MainScene extends Phaser.Scene {
     });
 
     this.activePiece.create();
+    this.gravity.start();
+
     this.ui.components.nextPiece.update();
 
-    const canMoveNextPiece = this.collisionDetection.canMove(
-      this.activePiece.x,
-      this.activePiece.y,
-      this.activePiece.shape,
-      this.gameState.boardData.data,
+    const canSpawnPiece = this.gameState.boardData.canSpawnPiece(
+      this.activePiece,
     );
 
-    if (!canMoveNextPiece) this.gameOver();
+    if (!canSpawnPiece) this.gameOver();
   }
 
-  private handleMoveLeft() {
-    const dx = -1;
-
-    if (
-      this.collisionDetection.canMove(
-        this.activePiece.x + dx,
-        this.activePiece.y,
-        this.activePiece.shape,
-        this.gameState.boardData.data,
-      )
-    ) {
-      this.activePiece.moveSide(dx);
-    }
+  private movePieceDown() {
+    this.inputHandler.moveDown(this.activePiece, this.gameState.boardData.data);
   }
 
-  private handleMoveRight() {
-    console.log("Move...");
-    const dx = 1;
-
-    if (
-      this.collisionDetection.canMove(
-        this.activePiece.x + dx,
-        this.activePiece.y,
-        this.activePiece.shape,
-        this.gameState.boardData.data,
-      )
-    ) {
-      this.activePiece.moveSide(dx);
-    }
+  private movePieceLeft() {
+    this.inputHandler.moveLeft(this.activePiece, this.gameState.boardData.data);
   }
 
-  private handleRotation() {
-    const nextRotation = (this.activePiece.currentRotation + 1) % 4;
-    const nextShape = SHAPES[this.activePiece.type][nextRotation];
-
-    // Order of this array does matter
-    const offsets = [0, -1, 1, -2, 2];
-
-    for (const dx of offsets) {
-      const canMove = this.collisionDetection.canMove(
-        this.activePiece.x + dx,
-        this.activePiece.y,
-        nextShape,
-        this.gameState.boardData.data,
-      );
-
-      if (canMove) {
-        if (dx !== 0) this.activePiece.moveSide(dx);
-
-        this.activePiece.rotate();
-        return;
-      }
-    }
-
-    console.log("Can not rotate even with Wall Kick...");
+  private movePieceRight() {
+    this.inputHandler.moveRight(
+      this.activePiece,
+      this.gameState.boardData.data,
+    );
   }
 
-  private handleHardDrop() {
-    let linesToDrop = 0;
+  private hardDropPiece() {
+    this.inputHandler.hardDrop(this.activePiece, this.gameState.boardData.data);
+  }
 
-    while (
-      this.collisionDetection.canMove(
-        this.activePiece.x,
-        this.activePiece.y + 1,
-        this.activePiece.shape,
-        this.gameState.boardData.data,
-      )
-    ) {
-      this.activePiece.moveDown();
-      linesToDrop++;
-    }
+  private rotatePiece() {
+    this.inputHandler.rotate(this.activePiece, this.gameState.boardData.data);
+  }
 
+  private stopPiece() {
     this.gameState.boardData.lockPiece(this.activePiece);
-    this.destroyPiece();
     const clearedLines = this.gameState.boardData.clearLines();
-    this.ui.components.board.update();
-    this.updateScore({ clearedLines });
 
+    if (clearedLines > 0) this.updateScore({ clearedLines });
+
+    this.ui.update();
     this.spawnPiece();
-  }
-
-  private handleMoveDown() {
-    const canMoveDown = this.collisionDetection.canMove(
-      this.activePiece.x,
-      this.activePiece.y + 1,
-      this.activePiece.shape,
-      this.gameState.boardData.data,
-    );
-
-    if (canMoveDown) {
-      this.activePiece.moveDown();
-    } else {
-      this.gameState.boardData.lockPiece(this.activePiece);
-      this.destroyPiece();
-      const clearedLines = this.gameState.boardData.clearLines();
-      this.ui.components.board.update();
-      this.updateScore({ clearedLines });
-
-      this.ui.components.board.update();
-
-      this.spawnPiece();
-    }
   }
 
   private destroyMoveTimer() {
@@ -215,26 +145,22 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
-  private destroyPiece() {
-    if (this.activePiece) {
-      this.activePiece.destroySprites();
-    }
-  }
-
   private handleControlsEvents() {
     this.events.on(ControlsEvent.MoveLeft, () => {
       if (this.gameState.isGameOver) return;
 
       // Immediate shift ONE cell left on the button tap
-      this.handleMoveLeft();
+      this.movePieceLeft();
       this.destroyMoveTimer();
+
       // Further fast shift left after delay while holding the button
       this.moveTimer = this.time.addEvent({
         delay: this.fastShiftDelay,
         callback: () => {
           this.moveTimer = this.time.addEvent({
             delay: this.fastShiftInterval,
-            callback: this.handleMoveLeft,
+            callbackScope: this,
+            callback: this.movePieceLeft,
             loop: true,
           });
         },
@@ -251,7 +177,7 @@ export class MainScene extends Phaser.Scene {
       if (this.gameState.isGameOver) return;
 
       // Immediate shift ONE cell right on the button tap
-      this.handleMoveRight();
+      this.movePieceRight();
       this.destroyMoveTimer();
       // Further fast shift right after delay while holding the button
       this.moveTimer = this.time.addEvent({
@@ -259,7 +185,8 @@ export class MainScene extends Phaser.Scene {
         callback: () => {
           this.moveTimer = this.time.addEvent({
             delay: this.fastShiftInterval,
-            callback: this.handleMoveRight,
+            callbackScope: this,
+            callback: this.movePieceRight,
             loop: true,
           });
         },
@@ -275,97 +202,61 @@ export class MainScene extends Phaser.Scene {
     this.events.on(ControlsEvent.HardDrop, () => {
       if (this.gameState.isGameOver) return;
 
-      this.handleHardDrop();
+      this.hardDropPiece();
     });
 
     this.events.on(ControlsEvent.Rotate, () => {
       if (this.gameState.isGameOver) return;
 
-      this.handleRotation();
+      this.rotatePiece();
     });
 
     this.events.on(ControlsEvent.SoftDrop, () => {
       if (this.gameState.isGameOver) return;
 
       // Immediate shift ONE cell down on the button tap
-      this.handleMoveDown();
+      this.movePieceDown();
+
       // Further fast shift down after delay while holding the button
-      this.gravityTimer.reset({
+      this.gravity.reset({
         delay: this.softDropInterval,
-        callback: this.handleMoveDown,
-        callbackScope: this,
-        loop: true,
+        paused: false,
       });
     });
 
     this.events.on(ControlsEvent.StopSoftDrop, () => {
       if (this.gameState.isGameOver) return;
 
-      this.gravityTimer.reset({
+      // Reset speed to level speed
+      this.gravity.reset({
         delay: this.gameState.dropInterval,
-        callback: this.handleMoveDown,
-        callbackScope: this,
-        loop: true,
+        paused: false,
       });
     });
   }
 
-  private handleGravity() {
-    // Permanent movement down with gravity
-    this.gravityTimer = this.time.addEvent({
-      delay: this.gameState.dropInterval,
-      callback: this.handleMoveDown,
-      callbackScope: this,
-      loop: true,
+  private handleCollisionEvents() {
+    this.events.on(CollisionEvent, () => {
+      this.stopPiece();
     });
   }
 
   private updateScore({ clearedLines }: { clearedLines: number }) {
-    if (clearedLines === 0) return;
+    this.gameState.updateScore({ clearedLines });
 
-    const pointsEarned = BASE_POINTS[clearedLines] * (this.gameState.level + 1);
-
-    // Update GameState
-    this.gameState.score += pointsEarned;
-    this.gameState.linesCleared += clearedLines;
-
-    // Update UI
-    this.ui.components.stats.updateScore(`${this.gameState.score}`);
-    this.ui.components.stats.updateLines(`${this.gameState.linesCleared}`);
-
-    // Increase level after each 10th cleared line
-    if (this.gameState.linesCleared >= (this.gameState.level + 1) * 10) {
-      // Update GameState
-      this.gameState.incrementLevel();
-      this.gameState.incrementCurrentFrameIndex();
-      this.gameState.increaseGameSpeed();
-
-      // Update UI
-      this.ui.components.nextPiece.update();
-      this.ui.components.board.update();
-      this.ui.components.stats.updateLevel(`${this.gameState.level}`);
-    }
+    if (this.gameState.shouldLevelUp()) this.gameState.levelUp();
   }
 
   private gameOver() {
     this.gameState.isGameOver = true;
-    this.gravityTimer.paused = true;
-
-    if (this.activePiece) this.activePiece.blink();
+    this.gravity.pause();
+    this.activePiece.blink();
 
     const timerEvent = this.time.addEvent({
       delay: GAME_OVER_DELAY,
       callback: () => {
-        this.gravityTimer.paused = false;
-        // Reset GameState
         this.gameState.reset();
-
-        // Reset UI
-        this.ui.components.stats.reset();
-        this.ui.components.board.update();
-        this.ui.components.nextPiece.update();
-
-        this.destroyPiece();
+        this.ui.update();
         this.spawnPiece();
 
         timerEvent.remove();

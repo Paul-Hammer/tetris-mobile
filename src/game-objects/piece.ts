@@ -4,7 +4,7 @@ import { BOARD_COLS, FRAMES, SHAPES, BLOCK_SIZE } from "../constants";
 
 export class Piece {
   private scene: MainScene;
-  private container: Phaser.GameObjects.Container;
+  public container: Phaser.GameObjects.Container;
 
   public shape: number[];
   public frame: number;
@@ -24,7 +24,7 @@ export class Piece {
     this.scene = scene;
     this.type = type;
     this.shape = SHAPES[type][this.currentRotation];
-    this.frame = FRAMES[this.scene.gameState.currentFrameIndex][type];
+    this.frame = FRAMES[this.scene.gameState.tetrominoVariants.current][type];
     this.boardPosition = position;
 
     this.container = this.scene.add
@@ -39,13 +39,14 @@ export class Piece {
     this.container.removeAll(true);
 
     const blocks: Phaser.GameObjects.Sprite[] = [];
+    const boardX = this.scene.ui.components.board.position.x;
+    const boardY = this.scene.ui.components.board.position.y;
 
     this.shape.forEach((index) => {
       const col = index % BOARD_COLS;
       const row = Math.floor(index / BOARD_COLS);
-
-      const x = col * BLOCK_SIZE + this.scene.ui.components.board.position.x;
-      const y = row * BLOCK_SIZE + this.scene.ui.components.board.position.y;
+      const x = col * BLOCK_SIZE + boardX;
+      const y = row * BLOCK_SIZE + boardY;
 
       const block = this.scene.add
         .sprite(x, y, "blocks", this.frame)
@@ -94,7 +95,7 @@ export class Piece {
     });
   }
 
-  public destroySprites() {
+  public destroy() {
     this.container.removeAll(true);
     this.container.destroy();
   }

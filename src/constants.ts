@@ -9,8 +9,6 @@ export const BLOCK_SIZE = 24;
 export const BOARD_COLS = 10;
 export const BOARD_ROWS = 20;
 
-// FFA500
-
 export const COLORS = {
   BOARD_BG: 0x000000,
   GRID_LINE: 0x333333,

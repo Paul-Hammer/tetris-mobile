@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 
 import { MainScene } from "../scenes/main-scene";
-import { ControlsFrame, ControlsEvent, type Position } from "../types";
+import { ControlsFrame, type Position } from "../types";
+import { ControlsEvent } from "../events";
 
 export class Controls {
   private scene: MainScene;
@@ -102,30 +103,11 @@ export class Controls {
   }
 
   public create() {
-    const { Left, Up, Rotate, Down, Right } = ControlsFrame;
+    const buttons = this.createButtons();
 
-    const baseWidth = Controls.buttonWidth + Controls.buttonsGap;
-    const texture = "controls";
-
-    const moveLeft = this.scene.add
-      .sprite(baseWidth * 0, 0, texture, Left)
-      .setOrigin(0);
-    const hardDrop = this.scene.add
-      .sprite(baseWidth * 1, 0, texture, Up)
-      .setOrigin(0);
-    const rotate = this.scene.add
-      .sprite(baseWidth * 2, 0, texture, Rotate)
-      .setOrigin(0);
-    const softDrop = this.scene.add
-      .sprite(baseWidth * 3, 0, texture, Down)
-      .setOrigin(0);
-    const moveRight = this.scene.add
-      .sprite(baseWidth * 4, 0, texture, Right)
-      .setOrigin(0);
-
-    this.container.add([moveLeft, moveRight, rotate, hardDrop, softDrop]);
+    this.container.add(Object.values(buttons));
     this.scene.add.existing(this.container);
-    this.setupEvents({ hardDrop, rotate, softDrop, moveRight, moveLeft });
+    this.setupEvents(buttons);
   }
 
   private createButtons() {

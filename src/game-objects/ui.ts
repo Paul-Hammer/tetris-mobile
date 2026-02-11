@@ -70,5 +70,9 @@ export class UI {
     this.components.controls.create();
   }
 
-  // update() {}
+  public update() {
+    this.components.board.update();
+    this.components.stats.update();
+    this.components.nextPiece.update();
+  }
 }

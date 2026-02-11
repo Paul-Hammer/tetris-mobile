@@ -16,9 +16,6 @@ const game = new Phaser.Game({
     height: "100%",
   },
 
-  // pixelArt: true,
-  // roundPixels: true,
-
   physics: {
     default: "arcade",
     arcade: {

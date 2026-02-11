@@ -161,6 +161,16 @@ export class Stats {
     if (scoreText) scoreText.setText(updatedValue);
   }
 
+  public update() {
+    const lines = this.scene.gameState.linesCleared;
+    const level = this.scene.gameState.level;
+    const score = this.scene.gameState.score;
+
+    this.updateLines(lines.toString());
+    this.updateLevel(level.toString());
+    this.updateScore(score.toString());
+  }
+
   public reset() {
     this.updateLines(DEFAULT_VALUE);
     this.updateLevel(DEFAULT_VALUE);

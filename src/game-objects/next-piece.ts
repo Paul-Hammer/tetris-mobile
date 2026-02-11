@@ -78,7 +78,8 @@ export class NextPiece {
 
     this.scene.typesQueue.queue.forEach((type, j) => {
       const shape = SHAPES[type][0];
-      const frame = FRAMES[this.scene.gameState.currentFrameIndex][type];
+      const frame =
+        FRAMES[this.scene.gameState.tetrominoVariants.current][type];
 
       shape.forEach((index) => {
         const col = index % BOARD_COLS;

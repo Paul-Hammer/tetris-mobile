@@ -50,6 +50,19 @@ export class BoardData {
     }
   }
 
+  public canSpawnPiece(piece: Piece) {
+    return piece.shape.every((index) => {
+      const col = index % BOARD_COLS;
+      const row = Math.floor(index / BOARD_COLS);
+      const boardX = piece.x + col;
+      const boardY = piece.y + row;
+
+      const cell = this.data[boardY][boardX];
+
+      return cell === null;
+    });
+  }
+
   public reset() {
     this.data = this.createData();
   }

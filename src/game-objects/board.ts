@@ -90,7 +90,7 @@ export class Board {
             x * BLOCK_SIZE + this.position.x,
             y * BLOCK_SIZE + this.position.y,
             "blocks",
-            FRAMES[this.scene.gameState.currentFrameIndex][type],
+            FRAMES[this.scene.gameState.tetrominoVariants.current][type],
           )
           .setOrigin(0)
           .setName(type);
