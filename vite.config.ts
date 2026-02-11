@@ -6,11 +6,15 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["assets/**/*.png", "assets/**/*.svg", "favicon.ico"],
+      injectRegister: "auto",
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
+        maximumFileSizeToCacheInBytes: 3000000,
+      },
       manifest: {
-        name: "Tetris Mobile",
+        name: "Tetris Mobile Game",
         short_name: "Tetris",
-        description: "Classic Tetris game built with Phaser and TypeScript",
+        description: "Classic Tetris built with Phaser and TS",
         theme_color: "#000000",
         background_color: "#000000",
         display: "standalone",
