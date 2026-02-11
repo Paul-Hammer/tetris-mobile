@@ -1,7 +1,7 @@
 import { FRAMES } from "../constants";
 
 export class TetrominoVariants {
-  private _current = 9;
+  private _current = 0;
 
   public get current() {
     return this._current;
