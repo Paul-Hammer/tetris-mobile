@@ -256,6 +256,10 @@ export class MainScene extends Phaser.Scene {
       delay: GAME_OVER_DELAY,
       callback: () => {
         this.gameState.reset();
+        this.gravity.reset({
+          delay: this.gameState.dropInterval,
+          paused: true,
+        });
         this.ui.update();
         this.spawnPiece();
 
