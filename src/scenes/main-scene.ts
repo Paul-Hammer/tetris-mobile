@@ -46,7 +46,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet("blocks", "/assets/images/blocks.svg", {
+    this.load.spritesheet("blocks", "assets/images/blocks.svg", {
       frameWidth: BLOCK_SIZE,
       frameHeight: BLOCK_SIZE,
       startFrame: 0,
@@ -55,7 +55,7 @@ export class MainScene extends Phaser.Scene {
       spacing: 2,
     });
 
-    this.load.spritesheet("controls", "/assets/images/controls.svg", {
+    this.load.spritesheet("controls", "assets/images/controls.svg", {
       frameWidth: 60,
       frameHeight: 44,
       startFrame: 0,
@@ -64,9 +64,9 @@ export class MainScene extends Phaser.Scene {
       spacing: 2,
     });
 
-    this.load.image("bg", "/assets/images/background.png");
-    this.load.image("stats", "/assets/images/header-stats-block.svg");
-    this.load.image("nextPiece", "/assets/images/next-piece-block.svg");
+    this.load.image("bg", "assets/images/background.png");
+    this.load.image("stats", "assets/images/header-stats-block.svg");
+    this.load.image("nextPiece", "assets/images/next-piece-block.svg");
   }
 
   create() {
