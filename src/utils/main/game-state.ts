@@ -1,6 +1,6 @@
 import { BoardData } from "./board-data";
 import { TetrominoVariants } from "./tetromino-variants";
-import type { TetrominoType } from "../types";
+import type { TetrominoType } from "../../types";
 
 const DEFAULT_DROP_INTERVAL = 1000;
 const BASE_POINTS = [0, 40, 100, 300, 1200];

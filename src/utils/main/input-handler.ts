@@ -1,9 +1,9 @@
-import { MainScene } from "../scenes/main-scene";
-import { Piece } from "../game-objects/piece";
+import { MainScene } from "../../scenes/main";
+import { Piece } from "../../game-objects/main/piece";
 import { CollisionDetection } from "./collision-detection";
-import { TetrominoType } from "../types";
-import { SHAPES } from "../constants";
-import { CollisionEvent } from "../events";
+import type { TetrominoType } from "../../types";
+import { CollisionEvent } from "../../events";
+import { SHAPES } from "../../constants";
 
 export class InputHandler {
   private scene: MainScene;

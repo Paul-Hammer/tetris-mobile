@@ -1,6 +1,6 @@
-import { MainScene } from "../scenes/main-scene";
-import { TetrominoType, type Position } from "../types";
-import { BOARD_COLS, FRAMES, SHAPES, BLOCK_SIZE } from "../constants";
+import { MainScene } from "../../scenes/main";
+import { TetrominoType, type Position } from "../../types";
+import { BOARD_COLS, FRAMES, SHAPES, BLOCK_SIZE } from "../../constants";
 
 export class Piece {
   private scene: MainScene;

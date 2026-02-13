@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 
-import { MainScene } from "../scenes/main-scene";
-import { ControlsFrame, type Position } from "../types";
-import { ControlsEvent } from "../events";
+import { MainScene } from "../../scenes/main";
+import { ControlsFrame, type Position } from "../../types";
+import { ControlsEvent } from "../../events";
 
 export class Controls {
   private scene: MainScene;

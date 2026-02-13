@@ -1,4 +1,4 @@
-import { MainScene } from "../scenes/main-scene";
+import { MainScene } from "../../scenes/main";
 import { Background } from "./background";
 import { Board } from "./board";
 import { Controls } from "./controls";

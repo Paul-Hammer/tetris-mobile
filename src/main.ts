@@ -1,6 +1,10 @@
 import Phaser from "phaser";
 import { registerSW } from "virtual:pwa-register";
 
+import { MainScene } from "./scenes/main";
+import { PreloadScene } from "./scenes/preload";
+import { TitleScene } from "./scenes/title";
+
 const updateSW = registerSW({
   onNeedRefresh() {
     if (confirm("Доступно обновление игры. Обновить?")) {
@@ -12,14 +16,12 @@ const updateSW = registerSW({
   },
 });
 
-import { MainScene } from "./scenes/main-scene";
-
 const GAME_CONTAINER_ID = "game-container";
 
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: GAME_CONTAINER_ID,
-  backgroundColor: "#1a1a1a",
+  backgroundColor: "#000000",
 
   scale: {
     mode: Phaser.Scale.FIT,
@@ -36,5 +38,5 @@ new Phaser.Game({
     },
   },
 
-  scene: [MainScene],
+  scene: [PreloadScene, TitleScene, MainScene],
 });

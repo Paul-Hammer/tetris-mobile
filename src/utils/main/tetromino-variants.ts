@@ -1,4 +1,4 @@
-import { FRAMES } from "../constants";
+import { FRAMES } from "../../constants";
 
 export class TetrominoVariants {
   private _current = 0;

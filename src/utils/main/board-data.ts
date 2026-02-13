@@ -1,9 +1,9 @@
-import type { Piece } from "../game-objects/piece";
-import { BOARD_COLS, BOARD_ROWS } from "../constants";
-import type { TetrominoType } from "../types";
+import { Piece } from "../../game-objects/main/piece";
+import type { TetrominoType } from "../../types";
+import { BOARD_COLS, BOARD_ROWS } from "../../constants";
 
 export class BoardData {
-  data: (TetrominoType | null)[][];
+  public data: (TetrominoType | null)[][];
 
   constructor() {
     this.data = this.createData();

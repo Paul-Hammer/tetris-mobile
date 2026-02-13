@@ -1,5 +1,5 @@
-import { BOARD_COLS, BOARD_ROWS } from "../constants";
-import type { TetrominoType } from "../types";
+import type { TetrominoType } from "../../types";
+import { BOARD_COLS, BOARD_ROWS } from "../../constants";
 
 export class CollisionDetection {
   public canMove(

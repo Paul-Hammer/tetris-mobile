@@ -1,8 +1,9 @@
 import type { TetrominoType } from "./types";
 
 export enum SceneKey {
-  Main = "Main",
   Preload = "Preload",
+  Title = "Title",
+  Main = "Main",
 }
 
 export const BLOCK_SIZE = 24;

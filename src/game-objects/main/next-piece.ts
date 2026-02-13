@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 
-import { MainScene } from "../scenes/main-scene";
-import type { Position, TetrominoType } from "../types";
-import { BLOCK_SIZE, BOARD_COLS, FRAMES, SHAPES } from "../constants";
+import { MainScene } from "../../scenes/main";
+import type { Position, TetrominoType } from "../../types";
+import { BLOCK_SIZE, BOARD_COLS, FRAMES, SHAPES } from "../../constants";
 
 const PIECE_WIDTH: Record<TetrominoType, number> = {
   I: 4,

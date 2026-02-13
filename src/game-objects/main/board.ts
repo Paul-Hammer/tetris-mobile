@@ -1,14 +1,14 @@
 import Phaser from "phaser";
 
-import { MainScene } from "../scenes/main-scene";
-import type { Position } from "../types";
+import type { MainScene } from "../../scenes/main";
+import type { Position } from "../../types";
 import {
   BLOCK_SIZE,
   BOARD_COLS,
   BOARD_ROWS,
   COLORS,
   FRAMES,
-} from "../constants";
+} from "../../constants";
 
 export class Board {
   private scene: MainScene;

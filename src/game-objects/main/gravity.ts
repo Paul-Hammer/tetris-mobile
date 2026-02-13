@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-import { MainScene } from "../scenes/main-scene";
+import { MainScene } from "../../scenes/main";
 
 export class Gravity {
   private scene: MainScene;

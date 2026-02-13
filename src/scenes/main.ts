@@ -1,12 +1,12 @@
 import Phaser from "phaser";
 
-import { Gravity } from "../game-objects/gravity";
-import { Piece } from "../game-objects/piece";
-import { UI } from "../game-objects/ui";
-import { GameState } from "../utils/game-state";
-import { InputHandler } from "../utils/input-handler";
-import { TypesQueue } from "../utils/types-queue";
-import { BLOCK_SIZE, SceneKey } from "../constants";
+import { Gravity } from "../game-objects/main/gravity";
+import { Piece } from "../game-objects/main/piece";
+import { UI } from "../game-objects/main/ui";
+import { GameState } from "../utils/main/game-state";
+import { InputHandler } from "../utils/main/input-handler";
+import { TypesQueue } from "../utils/main/types-queue";
+import { SceneKey } from "../constants";
 import { CollisionEvent, ControlsEvent } from "../events";
 import { TetrominoType, type Position } from "../types";
 
@@ -39,34 +39,10 @@ export class MainScene extends Phaser.Scene {
   private moveTimer: Phaser.Time.TimerEvent | null = null;
 
   constructor() {
-    super({ key: SceneKey.Main, active: true });
+    super({ key: SceneKey.Main, active: false });
 
     this.typesQueue = new TypesQueue();
     this.gameState = new GameState();
-  }
-
-  preload() {
-    this.load.spritesheet("blocks", "assets/images/blocks.svg", {
-      frameWidth: BLOCK_SIZE,
-      frameHeight: BLOCK_SIZE,
-      startFrame: 0,
-      endFrame: 29,
-      margin: 0,
-      spacing: 2,
-    });
-
-    this.load.spritesheet("controls", "assets/images/controls.svg", {
-      frameWidth: 60,
-      frameHeight: 44,
-      startFrame: 0,
-      endFrame: 4,
-      margin: 0,
-      spacing: 2,
-    });
-
-    this.load.image("bg", "assets/images/background.png");
-    this.load.image("stats", "assets/images/header-stats-block.svg");
-    this.load.image("nextPiece", "assets/images/next-piece-block.svg");
   }
 
   create() {

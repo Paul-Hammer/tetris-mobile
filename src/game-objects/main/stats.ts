@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
-import { MainScene } from "../scenes/main-scene";
-import type { Position } from "../types";
+import { MainScene } from "../../scenes/main";
+import type { Position } from "../../types";
 
 const STATS_WIDTH = 340;
 const STATS_HEIGHT = 44;

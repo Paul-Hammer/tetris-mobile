@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+import packageJson from "./package.json";
+
 export default defineConfig({
   base: "/tetris-mobile/",
   plugins: [
@@ -40,4 +42,7 @@ export default defineConfig({
       },
     }),
   ],
+  define: {
+    "import.meta.env.PACKAGE_VERSION": JSON.stringify(packageJson.version),
+  },
 });

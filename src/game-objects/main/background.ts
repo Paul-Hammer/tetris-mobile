@@ -1,5 +1,5 @@
-import type { MainScene } from "../scenes/main-scene";
-import type { Position } from "../types";
+import type { MainScene } from "../../scenes/main";
+import type { Position } from "../../types";
 
 export class Background {
   private scene: MainScene;

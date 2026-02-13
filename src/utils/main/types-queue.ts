@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-import { TetrominoType } from "../types";
+import { TetrominoType } from "../../types";
 
 export class TypesQueue {
   public _queue: TetrominoType[] = [];
